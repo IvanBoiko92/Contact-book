@@ -1,0 +1,179 @@
+package com.epam.rd.contactbook;
+
+import java.util.Arrays;
+
+public class Contact {
+    private ContactInfo[] contactInfos = new ContactInfo[1];
+    private final ContactInfo[] nameContactInfos = new ContactInfo[1];
+    private final ContactInfo[] phoneContactInfos = new ContactInfo[1];
+    private final ContactInfo[] emailContactInfos = new ContactInfo[3];
+    private final ContactInfo[] socialContactInfos = new ContactInfo[5];
+    private String contactName;
+    private int nameCount = 0;
+    private int emailCount = 0;
+    private int socialCount = 0;
+    private int phoneCount = 0;
+
+    public Contact(String contactName) {
+        this.contactName = contactName;
+        nameContactInfos[nameCount++] = this.new NameContactInfo();
+        generateContactInfo();
+
+    }
+    
+    private class NameContactInfo implements ContactInfo {
+        @Override
+        public String getTitle() {
+            return "Name";
+        }
+        @Override
+        public String getValue() {
+            return contactName;
+        }
+    }
+    
+    public static class Email implements ContactInfo {
+        String title;
+        String value;
+        public Email(String title, String value) {
+            this.title = title;
+            this.value = value;
+        }
+        @Override
+        public String getTitle() {return title;}
+        @Override
+        public String getValue() {return value;}
+    }
+    
+    public static class Social implements ContactInfo {
+        String title;
+        String value;
+        public Social(String title, String value) {
+            this.title = title;
+            this.value = value;
+        }
+        @Override
+        public String getTitle() {return title;}
+        @Override
+        public String getValue() {return value;}
+    }
+
+    public void rename(String newName) {
+        if (newName != null && !newName.equals("")) {
+            contactName = newName;
+        }
+    }
+    
+    public Email addEmail(String localPart, String domain) {
+        if(emailCount <3) {
+            Email email = new Email("Email", localPart + "@" + domain);
+            emailContactInfos[emailCount++] = email;
+            generateContactInfo();
+            return email;
+        }
+        return null;
+    }
+    
+    public Email addEpamEmail(String firstname, String lastname) {
+        if (emailCount < 3) {
+            Email mail = new Contact.Email(firstname, lastname) {
+                @Override
+                public String getTitle() {
+                    return "Epam Email";
+                }
+                @Override
+                public String getValue() {
+                    return firstname + "_" + lastname + "@epam.com";
+                }
+            };
+            emailContactInfos[emailCount++] = mail;
+            generateContactInfo();
+            return mail;
+        }
+        return null;
+    }
+
+    public ContactInfo addPhoneNumber(int code, String number) {
+        if (phoneCount < 1) {
+            ContactInfo phone = new ContactInfo() {
+                public String getTitle() {
+                    return "Tel";
+                }
+
+                public String getValue() {
+                    return "+" + code + " " + number;
+                }
+            };
+            phoneContactInfos[phoneCount++] = phone;
+            generateContactInfo();
+
+            return phone;
+        }
+        return null;
+    }
+    public Social addTwitter(String twitterId) {
+        if (socialCount < 5) {
+            Social twitter = new Contact.Social("Twitter", twitterId);
+            socialContactInfos[socialCount++] = twitter;
+            generateContactInfo();
+
+            return twitter;
+        }
+        return null;
+    }
+    
+    public Social addInstagram(String instagramId) {
+        if (socialCount < 5) {
+            Social instagram = new Contact.Social("Instagram", instagramId);
+            socialContactInfos[socialCount++] = instagram;
+            generateContactInfo();
+            return instagram;
+        }
+        return null;
+    }
+    
+    public Social addSocialMedia(String title, String id) {
+        if (socialCount < 5) {
+            Social social = new Contact.Social(title, id);
+            socialContactInfos[socialCount++] = social;
+            generateContactInfo();
+
+            return social;
+        }
+        return null;
+    }
+    
+    public ContactInfo[] getInfo() {
+        return contactInfos;
+    }
+    
+    private void generateContactInfo() {
+        ContactInfo[] temp;
+        if (nameCount > 0) {
+            contactInfos = new ContactInfo[nameCount];
+            System.arraycopy(nameContactInfos, 0, contactInfos, 0, nameCount);
+        }
+        if (phoneCount > 0) {
+            int contactLength = contactInfos.length;
+            temp = contactInfos;
+            contactInfos = new ContactInfo[phoneCount + contactLength];
+            System.arraycopy(temp, 0, contactInfos, 0, temp.length);
+            System.arraycopy(phoneContactInfos, 0, contactInfos, nameContactInfos.length, phoneCount);
+        }
+        if (emailCount > 0) {
+            int contactLength = contactInfos.length;
+            temp = contactInfos;
+            contactInfos = new ContactInfo[emailCount + contactLength];
+            System.arraycopy(temp, 0, contactInfos, 0, temp.length);
+            System.arraycopy(emailContactInfos, 0, contactInfos, contactLength, emailCount);
+        }
+
+        if (socialCount > 0) {
+            int contactLength = contactInfos.length;
+            temp = contactInfos;
+            contactInfos = new ContactInfo[socialCount + contactLength];
+            System.arraycopy(temp, 0, contactInfos, 0, temp.length);
+            System.arraycopy(socialContactInfos, 0, contactInfos, contactLength, socialCount);
+        }
+    }
+}

@@ -1,0 +1,147 @@
+package com.epam.rd.contactbook;
+
+public class Contact {
+    String contactName, title, value;
+    private int phoneCounter, indexOfEmail = 2, indexOfSocial = 5;
+    int emailCounter;
+    int socialCounter;
+    ContactInfo [] contactInfoEntries = new ContactInfo[11];
+    static ContactInfo [] emailContactInfos = new ContactInfo[3];
+    static ContactInfo [] socialContactInfos = new ContactInfo[5];
+
+    public Contact(String contactName) {
+        if (contactName != null){
+           this.contactName = contactName;
+        }
+        contactInfoEntries[0] = new NameContactInfo();
+  }
+
+    public void rename(String newName) {
+        if ((newName != null)&&(newName!="")){
+            this.contactName = newName;
+        }
+    }
+
+    private class NameContactInfo implements ContactInfo {
+        public String getTitle() {
+            return "Name";
+        }
+        public String getValue() {
+            return contactName;
+        }
+    }
+
+    public static class Email implements ContactInfo {
+        String title;
+        String value;
+        public Email(String title, String value) {
+            this.title = title;
+            this.value = value; }
+        public String getTitle() {return title;}
+        public String getValue() {return value;}
+    }
+
+    public static class Social implements ContactInfo {
+        String title;
+        String value;
+        public Social(String title, String value) {
+            this.title = title;
+            this.value = value;
+        }
+        public String getTitle() {
+            return title;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public Email addEmail(String localPart, String domain) {
+        if(emailCounter <3) {
+            Email email = new Email("Email", localPart + "@" + domain);
+            emailContactInfos[emailCounter++] = email;
+            //generateContactInfo();
+            return email;
+        }
+        return null;
+    }
+
+    public Email addEpamEmail(String firstname, String lastname) {
+        if(emailCounter <3) {
+            Email email = new Email("Epam Email", firstname+"_"+lastname + "@epam.com");
+            emailContactInfos[emailCounter++] = email;
+            //generateContactInfo();
+            return email;
+        }
+        return null;
+    }
+
+    public ContactInfo addPhoneNumber (int code, String number) {
+        ContactInfo phoneNumber = new ContactInfo() {
+            public String getTitle() {
+                return "Tel";
+            }
+            public String getValue() {
+                return "+"+code+" "+number;
+            }
+        };
+        if (phoneCounter < 1) {
+            contactInfoEntries[1] = phoneNumber;
+            phoneCounter++;
+            return phoneNumber;
+        }
+        return null;
+    }
+
+    public Social addTwitter(String twitterId) {
+        if(socialCounter <5) {
+            Social twitter = new Social("Twitter", twitterId);
+            socialContactInfos[socialCounter++] = twitter;
+            //generateContactInfo();
+            return twitter;
+        }
+        return null;
+    }
+
+    public Social addInstagram(String instagramId) {
+        if(socialCounter <5) {
+            Social instagram = new Social("Instagram", instagramId);
+            socialContactInfos[socialCounter++] = instagram;
+            //generateContactInfo();
+            return instagram;
+        }
+        return null;
+    }
+
+    public Social addSocialMedia(String title, String id) {
+        String t = title;
+        String i = id;
+        if(socialCounter <5) {
+            Social socialMedia = new Social(t,i);
+            socialContactInfos[socialCounter++] = socialMedia;
+            //generateContactInfo();
+            return socialMedia;
+        }
+        return null;
+    }
+
+    public ContactInfo[] getInfo() {
+        int totalcounter = phoneCounter + emailCounter + socialCounter + 1;
+        ContactInfo [] Info = new ContactInfo[totalcounter];
+        System.arraycopy(emailContactInfos, 0, contactInfoEntries, 2, emailContactInfos.length);
+        System.arraycopy(socialContactInfos, 0, contactInfoEntries, 5, emailContactInfos.length);
+        /*for (int i =1; i < 3; i++) {
+            contactInfoEntries[1+i] = emailContactInfos[i];
+        }
+        for (int k = 5; k < 10; k++){
+            contactInfoEntries [k] = socialContactInfos[k-5];
+        }*/
+        int i =0;
+        for (ContactInfo value:contactInfoEntries){
+            if(value!=null){
+                Info[i++] = value;
+            }
+        }
+        return Info;
+    }
+}
